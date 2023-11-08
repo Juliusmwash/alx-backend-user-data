@@ -6,10 +6,9 @@ from typing import List, TypeVar
 
 
 class Auth:
-    """ Class to manage the API authentication """
-
+    """ Class to manage the API authentication
     def require_auth(self, path: str, excluded_paths: List[str]) -> bool:
-        """ Method for requiring authentication """
+        # Method for requiring authentication
         if path is None or excluded_paths is None or not len(excluded_paths):
             return True
         # Add slash to all cases for consistency
@@ -19,6 +18,25 @@ class Auth:
             excluded_paths += '/'
         if path in excluded_paths:
             return False
+        return True
+    """
+
+    def require_auth(self, path: str, excluded_paths: List[str]) -> bool:
+        """ Method for requiring authentication """
+        if path is None or excluded_paths is None or not len(excluded_paths):
+            return True
+        if path[-1] != '/':
+            path += '/'
+
+        for excluded_path in excluded_paths:
+            if excluded_path[-1] == '*':
+                excluded_path = excluded_path.rstrip('*')
+                if path.startswith(excluded_path):
+                    return False
+            else:
+                if path == excluded_path:
+                    return False
+
         return True
 
     def authorization_header(self, request=None) -> str:
